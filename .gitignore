@@ -8,9 +8,8 @@ __pycache__/
 data/csv/*.csv
 data/pcap/*.pcap
 data/output/*.csv
-
 # Grafik çıktıları
-data/*.png
+data/plots/*.png
 
 # VS Code
 .vscode/
