@@ -1,0 +1,23 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Büyük veri dosyaları
+data/csv/*.csv
+data/pcap/*.pcap
+data/output/*.csv
+
+# Grafik çıktıları
+data/*.png
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
