@@ -1,0 +1,10 @@
+{
+  "user_id": 1,
+  "n_samples": 19835,
+  "label_col": "label_multiclass",
+  "accuracy": 0.995916309553819,
+  "precision_w": 0.9958090406043376,
+  "recall_w": 0.995916309553819,
+  "f1_weighted": 0.9958437982313595,
+  "f1_macro": 0.9159371693908898
+}

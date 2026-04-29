@@ -1,0 +1,6 @@
+,simple_avg,weighted_avg
+accuracy,0.996,0.996
+precision_w,0.9958,0.9958
+recall_w,0.996,0.996
+f1_weighted,0.9959,0.9959
+f1_macro,0.9042,0.9042
