@@ -46,6 +46,7 @@ bin_explainer = shap.TreeExplainer(bin_model)
 print("SHAP explainers ready.")
 
 _history: deque = deque(maxlen=500)
+_events: deque = deque(maxlen=1000)
 
 FEATURE_DICT: dict[str, dict] = {
     "Flow Duration": {
@@ -266,6 +267,8 @@ def stream_traffic():
         "reasoning":             reasoning,
     }
 
+    _events.appendleft(event)
+
     if pred_bin == 1:
         _history.appendleft(event)
 
@@ -291,6 +294,45 @@ def get_stats():
         lbl = e["label"]
         distribution[lbl] = distribution.get(lbl, 0) + 1
     return {"total_attacks": len(data), "distribution": distribution}
+
+@app.get("/dashboard/summary")
+def get_dashboard_summary():
+    data = list(_events)
+
+    total = len(data)
+    attacks = sum(1 for e in data if e["prediction_binary"] == 1)
+    benign = total - attacks
+    attack_rate = round((attacks / total) * 100) if total > 0 else 0
+
+    return {
+        "total": total,
+        "attacks": attacks,
+        "benign": benign,
+        "attackRate": attack_rate,
+    }
+
+@app.get("/dashboard/traffic")
+def get_dashboard_traffic(limit: int = Query(default=60, le=500)):
+    data = list(reversed(list(_events)))  # oldest → newest
+    data = data[-limit:]
+
+    points = []
+    total = 0
+    attacks = 0
+
+    for e in data:
+        total += 1
+        attacks += int(e["prediction_binary"])
+
+        points.append({
+            "time": e["timestamp"],
+            "total": total,
+            "attacks": attacks,
+        })
+
+    return {
+        "items": points
+    }
 
 
 @app.get("/")

@@ -19,6 +19,7 @@ export function LiveFeed({ event }: LiveFeedProps) {
   }
 
   const isAttack = event.prediction_binary === 1;
+  const topReason = event.reasoning?.[0];
 
   return (
     <div className={`rounded-xl border transition-colors duration-300 overflow-hidden ${
@@ -44,6 +45,40 @@ export function LiveFeed({ event }: LiveFeedProps) {
           {event.date} {event.timestamp}
         </div>
       </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 px-5 py-4 border-b border-slate-800/60 bg-slate-950/20">
+  <div className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2">
+    <p className="text-[10px] text-slate-600 uppercase tracking-widest">Prediction</p>
+    <p className={`mt-1 text-xs font-semibold ${isAttack ? "text-red-300" : "text-emerald-300"}`}>
+      {isAttack ? "Attack" : "Benign"}
+    </p>
+  </div>
+
+  <div className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2">
+    <p className="text-[10px] text-slate-600 uppercase tracking-widest">Class</p>
+    <p className="mt-1 text-xs font-semibold text-slate-300 truncate">
+      {event.label}
+    </p>
+  </div>
+
+  <div className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2">
+    <p className="text-[10px] text-slate-600 uppercase tracking-widest">Top Feature</p>
+    <p className="mt-1 text-xs font-mono text-slate-300 truncate">
+      {topReason?.feature ?? "—"}
+    </p>
+  </div>
+
+  <div className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2">
+    <p className="text-[10px] text-slate-600 uppercase tracking-widest">SHAP Value</p>
+    <p className={`mt-1 text-xs font-mono font-semibold ${
+      (topReason?.shap_value ?? 0) >= 0 ? "text-red-300" : "text-emerald-300"
+    }`}>
+      {topReason
+        ? `${topReason.shap_value > 0 ? "+" : ""}${topReason.shap_value.toFixed(4)}`
+        : "—"}
+    </p>
+  </div>
+</div>
 
       {isAttack && event.reasoning.length > 0 && (
         <div className="p-5">

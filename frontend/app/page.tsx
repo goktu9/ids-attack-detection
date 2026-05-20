@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from "react";
 import {
   Activity, Shield, Wifi, AlertTriangle,
-  CheckCircle2, Radio, RefreshCw,
+  CheckCircle2, Radio, RefreshCw, Clock,
 } from "lucide-react";
 
 import { StatCard }       from "../components/StatCard";
@@ -11,7 +11,13 @@ import { TrafficChart }   from "../components/TrafficChart";
 import { AttackPieChart } from "../components/AttackPieChart";
 import { AlertsTable }    from "../components/AlertsTable";
 
-import { fetchStream, fetchHistory, fetchStats } from "./api";
+import {
+  fetchStream,
+  fetchHistory,
+  fetchStats,
+  fetchDashboardSummary,
+  fetchDashboardTraffic,
+} from "./api";
 import type {
   StreamEvent, TrafficPoint, SessionStats,
   HistoryResponse, StatsResponse,
@@ -30,56 +36,88 @@ export default function Dashboard() {
   const [filterType, setFilterType] = useState("all");
   const [connected, setConnected]   = useState(false);
   const [lastUpdate, setLastUpdate] = useState<string>("");
+  const [currentTime, setCurrentTime] = useState("");
 
-  const poll = useCallback(async () => {
+  useEffect(() => {
+  const updateClock = () => {
+    const now = new Date();
+    setCurrentTime(
+      now.toLocaleTimeString("tr-TR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      })
+    );
+  };
+  updateClock();
+
+  const clockInterval = setInterval(updateClock, 1000);
+  return () => clearInterval(clockInterval);
+}, []);
+
+  const refreshDashboardState = useCallback(async () => {
+  try {
+    const [summary, trafficData] = await Promise.all([
+      fetchDashboardSummary(),
+      fetchDashboardTraffic(MAX_TRAFFIC_POINTS),
+    ]);
+
+    setSession(summary);
+    setTraffic(trafficData.items);
+  } catch {
+    setConnected(false);
+  }
+}, []);
+
+const poll = useCallback(async () => {
     try {
       const event = await fetchStream();
+
       setConnected(true);
       setLatest(event);
       setLastUpdate(event.timestamp);
 
-      setTraffic(prev => {
-        const last = prev.at(-1);
-        return [
-          ...prev,
-          {
-            time:    event.timestamp,
-            total:   (last?.total   ?? 0) + 1,
-            attacks: (last?.attacks ?? 0) + event.prediction_binary,
-          },
-        ].slice(-MAX_TRAFFIC_POINTS);
-      });
+    await refreshDashboardState();
+  } catch {
+    setConnected(false);
+  }
+}, [refreshDashboardState]);
 
-      setSession(prev => {
-        const total   = prev.total + 1;
-        const attacks = prev.attacks + event.prediction_binary;
-        return { total, attacks, benign: total - attacks, attackRate: Math.round((attacks / total) * 100) };
-      });
-    } catch {
-      setConnected(false);
-    }
-  }, []);
+  const refreshHistory = useCallback(async (selectedType = filterType) => {
+  try {
+    const [hist, stats]: [HistoryResponse, StatsResponse] = await Promise.all([
+      fetchHistory(50, selectedType === "all" ? undefined : selectedType),
+      fetchStats(),
+    ]);
 
-  const refreshHistory = useCallback(async () => {
-    try {
-      const [hist, stats]: [HistoryResponse, StatsResponse] = await Promise.all([
-        fetchHistory(50, filterType === "all" ? undefined : filterType),
-        fetchStats(),
-      ]);
-      setHistory(hist.items);
-      setDistribution(stats.distribution);
-    } catch { /* silent */ }
-  }, [filterType]);
+    setHistory(hist.items);
+    setDistribution(stats.distribution);
+  } catch {
+    setConnected(false);
+  }
+}, [filterType]);
 
   useEffect(() => {
-    poll();
-    const s = setInterval(poll,           STREAM_INTERVAL_MS);
-    const h = setInterval(refreshHistory, HISTORY_INTERVAL_MS);
-    refreshHistory();
-    return () => { clearInterval(s); clearInterval(h); };
-  }, [poll, refreshHistory]);
+  refreshDashboardState();
+  poll();
 
-  const attackTypes = Object.keys(distribution);
+  const streamInterval = setInterval(poll, STREAM_INTERVAL_MS);
+
+  return () => clearInterval(streamInterval);
+}, [poll, refreshDashboardState]);
+
+useEffect(() => {
+  refreshHistory(filterType);
+  const historyInterval = setInterval(() => {
+    refreshHistory(filterType);
+  }, HISTORY_INTERVAL_MS);
+
+  return () => clearInterval(historyInterval);
+}, [filterType, refreshHistory]);
+
+  const attackTypes = Object.keys(distribution).filter(
+  type => type.toUpperCase() !== "BENIGN"
+);
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
@@ -111,12 +149,19 @@ export default function Dashboard() {
               {connected ? "LIVE" : "DISCONNECTED"}
             </div>
 
-            {lastUpdate && (
-              <div className="flex items-center gap-1.5 text-[11px] text-slate-600 font-mono">
-                <RefreshCw size={10} />
-                {lastUpdate}
+            
+              <div className="hidden sm:flex items-center gap-1.5 text-[11px] text-slate-600 font-mono">
+                <Clock size={10} />
+                {currentTime}
               </div>
-            )}
+
+              {lastUpdate && (
+                <div className="hidden md:flex items-center gap-1.5 text-[11px] text-slate-600 font-mono">
+                  <RefreshCw size={10} />
+                  Last event: {lastUpdate}
+                </div>
+              )}
+              
           </div>
         </div>
       </header>
@@ -170,14 +215,14 @@ export default function Dashboard() {
 
         {/* History table */}
         <AlertsTable
-          items={history}
-          attackTypes={attackTypes}
-          filterType={filterType}
-          onFilterChange={type => {
-            setFilterType(type);
-            setTimeout(refreshHistory, 100);
-          }}
-        />
+  items={history}
+  attackTypes={attackTypes}
+  filterType={filterType}
+  onFilterChange={type => {
+    setFilterType(type);
+    refreshHistory(type);
+  }}
+/>
       </main>
     </div>
   );
