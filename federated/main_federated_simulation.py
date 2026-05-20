@@ -1,11 +1,11 @@
 """
-Federated Learning Simülasyonu — Ana Aggregator
-1) Her user script'ini çalıştırır
-2) Sonuçları toplar
-3) Simple + Weighted average hesaplar
-4) Özet tabloyu yazdırır ve kaydeder
+Federated Learning Simulation — Main Aggregator
+1) Runs each user script
+2) Collects results
+3) Computes simple + weighted average
+4) Prints and saves summary table
 
-Çalıştır: python main_federated_simulation.py
+Run: python main_federated_simulation.py
 """
 from pathlib import Path
 import json

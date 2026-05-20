@@ -1,6 +1,6 @@
 """
-Test setini N mock user'a böler.
-Çalıştır: python split_test_data.py
+Split the test set into N mock users.
+Run: python split_test_data.py
 """
 from pathlib import Path
 import pandas as pd
@@ -8,7 +8,7 @@ import numpy as np
 
 RANDOM_STATE = 42
 N_USERS      = 5
-LABEL_COL    = "label_multiclass"  # "label_binary" olarak da değiştirilebilir
+LABEL_COL    = "label_multiclass"  # can also be "label_binary"
 
 HERE = Path(__file__).resolve().parent
 SRC  = HERE / f"holdout_test_{LABEL_COL}.csv"
