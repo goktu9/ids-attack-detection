@@ -3,7 +3,11 @@ import {
   ResponsiveContainer, LineChart, Line, XAxis, YAxis,
   CartesianGrid, Tooltip, Legend,
 } from "recharts";
-import type { TrafficPoint } from "../types";
+interface TrafficPoint {
+  time: string;
+  total: number;
+  attacks: number;
+}
 
 interface TrafficChartProps {
   data: TrafficPoint[];
