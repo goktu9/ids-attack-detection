@@ -10,16 +10,16 @@ interface StatCardProps {
 }
 
 const ACCENT = {
-  blue:   { border: "border-blue-500/30",   text: "text-blue-400",    glow: "from-blue-500/5" },
-  red:    { border: "border-red-500/30",    text: "text-red-400",     glow: "from-red-500/5"  },
-  green:  { border: "border-emerald-500/30",text: "text-emerald-400", glow: "from-emerald-500/5" },
-  yellow: { border: "border-amber-500/30",  text: "text-amber-400",   glow: "from-amber-500/5"   },
+  blue:   { border: "border-[#0c4c8f]/30", text: "text-[#0c4c8f]", glow: "from-[#0c4c8f]/5" },
+  red:    { border: "border-red-400/40",   text: "text-red-600",   glow: "from-red-500/5" },
+  green:  { border: "border-emerald-400/40", text: "text-emerald-600", glow: "from-emerald-500/5" },
+  yellow: { border: "border-amber-400/40", text: "text-amber-600", glow: "from-amber-500/5" },
 };
 
 export function StatCard({ label, value, icon: Icon, accent = "blue", sublabel }: StatCardProps) {
   const a = ACCENT[accent];
   return (
-    <div className={`relative bg-slate-900/70 rounded-xl border ${a.border} p-5 overflow-hidden`}>
+    <div className={`relative bg-white rounded-xl border ${a.border} p-5 overflow-hidden shadow-sm`}>
       <div className={`absolute inset-0 bg-gradient-to-br ${a.glow} to-transparent pointer-events-none`} />
       <div className="relative flex items-start justify-between">
         <div>
@@ -27,7 +27,7 @@ export function StatCard({ label, value, icon: Icon, accent = "blue", sublabel }
           <p className={`text-2xl font-bold font-mono tabular-nums ${a.text}`}>{value}</p>
           {sublabel && <p className="text-[11px] text-slate-600 mt-1">{sublabel}</p>}
         </div>
-        <div className={`p-2 rounded-lg bg-slate-800/80 ${a.text}`}>
+        <div className={`p-2 rounded-lg bg-[#0c4c8f]/10 ${a.text}`}>
           <Icon size={18} />
         </div>
       </div>

@@ -14,10 +14,10 @@ const CustomTooltip = ({ active, payload }: any) => {
   if (!active || !payload?.length) return null;
   const { name, value, payload: p } = payload[0];
   return (
-    <div className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs shadow-xl">
-      <p className="text-slate-300 font-semibold mb-1">{name}</p>
-      <p className="text-slate-400">Sayı: <span className="text-white font-mono">{value}</span></p>
-      <p className="text-slate-400">Oran: <span className="text-white font-mono">{p.pct}%</span></p>
+    <div className="bg-white border border-[#0c4c8f]/20 rounded-lg px-3 py-2 text-xs shadow-xl">
+      <p className="text-[#0c4c8f] font-semibold mb-1">{name}</p>
+      <p className="text-slate-400">Count: <span className="text-white font-mono">{value}</span></p>
+      <p className="text-slate-400">Ratio: <span className="text-white font-mono">{p.pct}%</span></p>
     </div>
   );
 };
@@ -32,16 +32,16 @@ export function AttackPieChart({ distribution }: AttackPieChartProps) {
 
   if (data.length === 0) {
     return (
-      <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-5 flex items-center justify-center h-[280px]">
-        <p className="text-slate-600 text-sm">Henüz saldırı kaydı yok</p>
+      <div className="bg-white border border-[#0c4c8f]/20 rounded-xl p-5 flex items-center justify-center h-[280px] shadow-sm">
+        <p className="text-slate-600 text-sm">No attack records yet</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-5">
-      <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-widest mb-4">
-        Saldırı Türü Dağılımı
+    <div className="bg-white border border-[#0c4c8f]/20 rounded-xl p-5 shadow-sm">
+      <h3 className="text-sm font-semibold text-[#0c4c8f] uppercase tracking-widest mb-4">
+        Attack Type Distribution
       </h3>
       <ResponsiveContainer width="100%" height={220}>
         <PieChart>
@@ -60,7 +60,7 @@ export function AttackPieChart({ distribution }: AttackPieChartProps) {
           </Pie>
           <Tooltip content={<CustomTooltip />} />
           <Legend
-            formatter={(value) => <span style={{ fontSize: 11, color: "#94a3b8" }}>{value}</span>}
+            formatter={(value) => <span style={{ fontSize: 11, color: "#0c4c8f" }}>{value}</span>}
             iconType="circle"
             iconSize={8}
           />

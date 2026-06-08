@@ -314,6 +314,15 @@ def main() -> None:
         stratify=y_all,
     )
 
+    # Save raw (unscaled) holdout test set for the backend before scaling.
+    # backend/main.py reads this file at startup to serve prediction samples.
+    holdout_raw_df = pd.DataFrame(X_test, columns=features)
+    holdout_raw_df[cfg.label_col] = y_test
+    holdout_csv_path = here.parent / "federated" / "holdout_test_label_multiclass.csv"
+    holdout_csv_path.parent.mkdir(parents=True, exist_ok=True)
+    holdout_raw_df.to_csv(holdout_csv_path, index=False)
+    print(f"✓ Holdout CSV saved: {holdout_csv_path}  ({len(holdout_raw_df):,} rows)")
+
     scaler = StandardScaler()
     X_train = scaler.fit_transform(X_train).astype(np.float32)
     X_test = scaler.transform(X_test).astype(np.float32)
