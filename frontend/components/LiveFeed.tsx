@@ -1,20 +1,19 @@
+// frontend/components/LiveFeed.tsx — REPLACE
 "use client";
 
-import { AlertTriangle, ShieldCheck, Clock } from "lucide-react";
+import { AlertTriangle, ShieldCheck, Clock, Zap } from "lucide-react";
 import { XaiCard } from "./XaiCard";
 import type { StreamEvent } from "../app/types";
 
-interface LiveFeedProps {
-  event: StreamEvent | null;
-}
+interface LiveFeedProps { event: StreamEvent | null; }
 
 export function LiveFeed({ event }: LiveFeedProps) {
   if (!event) {
     return (
-      <div className="flex items-center justify-center h-32 rounded-xl border border-[#0c4c8f]/20 bg-white shadow-sm">
-        <p className="text-[#0c4c8f]/70 animate-pulse text-xs tracking-widest uppercase">
-          Waiting for connection...
-        </p>
+      <div className="flex items-center justify-center h-28 rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="flex items-center gap-2 text-slate-400 animate-pulse text-xs tracking-widest uppercase">
+          <Zap size={13} />Waiting for connection…
+        </div>
       </div>
     );
   }
@@ -23,115 +22,73 @@ export function LiveFeed({ event }: LiveFeedProps) {
   const topReason = event.reasoning?.[0];
 
   return (
-    <div
-      className={`rounded-xl border transition-colors duration-300 overflow-hidden shadow-sm ${
+    <div className={`rounded-2xl border overflow-hidden shadow-sm transition-all duration-300 ${
+      isAttack ? "border-red-200 bg-white" : "border-emerald-200 bg-white"
+    }`}>
+      {/* Header bar */}
+      <div className={`px-5 py-3 flex items-center justify-between ${
         isAttack
-          ? "border-red-400/50 bg-red-50"
-          : "border-[#0c4c8f]/25 bg-[#0c4c8f]/[0.04]"
-      }`}
-    >
-      {/* Header */}
-      <div
-        className={`px-5 py-3 flex items-center justify-between border-b ${
-          isAttack
-            ? "bg-red-100/70 border-red-200"
-            : "bg-[#0c4c8f]/10 border-[#0c4c8f]/20"
-        }`}
-      >
-        <div className="flex items-center gap-3">
-          {isAttack ? (
-            <AlertTriangle size={16} className="text-red-600" />
-          ) : (
-            <ShieldCheck size={16} className="text-[#0c4c8f]" />
-          )}
-
-          <span
-            className={`font-semibold text-sm ${
-              isAttack ? "text-red-700" : "text-[#0c4c8f]"
-            }`}
-          >
+          ? "bg-gradient-to-r from-red-50 to-orange-50 border-b border-red-100"
+          : "bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-emerald-100"
+      }`}>
+        <div className="flex items-center gap-2.5">
+          <div className={`p-1.5 rounded-lg ${isAttack ? "bg-red-100" : "bg-emerald-100"}`}>
+            {isAttack
+              ? <AlertTriangle size={14} className="text-red-600" />
+              : <ShieldCheck  size={14} className="text-emerald-600" />}
+          </div>
+          <span className={`font-bold text-sm ${isAttack ? "text-red-700" : "text-emerald-700"}`}>
             {isAttack ? `ATTACK DETECTED — ${event.label}` : "BENIGN TRAFFIC"}
           </span>
+          {isAttack && (
+            <span className="text-[10px] px-2 py-0.5 bg-red-100 text-red-600 rounded-full font-bold border border-red-200 animate-pulse">
+              ALERT
+            </span>
+          )}
         </div>
-
-        <div className="flex items-center gap-2 text-slate-500 text-xs font-mono">
-          <Clock size={11} />
-          {event.date} {event.timestamp}
+        <div className="flex items-center gap-1.5 text-slate-400 text-[11px] font-mono">
+          <Clock size={10} />{event.date} {event.timestamp}
         </div>
       </div>
 
-      {/* Prediction Summary Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 px-5 py-4 border-b border-[#0c4c8f]/15 bg-white/70">
-        <div className="rounded-lg border border-[#0c4c8f]/15 bg-white px-3 py-2 shadow-sm">
-          <p className="text-[10px] text-[#0c4c8f]/60 uppercase tracking-widest">
-            Prediction
-          </p>
-          <p
-            className={`mt-1 text-xs font-semibold ${
-              isAttack ? "text-red-700" : "text-[#0c4c8f]"
-            }`}
-          >
-            {isAttack ? "Attack" : "Benign"}
-          </p>
-        </div>
-
-        <div className="rounded-lg border border-[#0c4c8f]/15 bg-white px-3 py-2 shadow-sm">
-          <p className="text-[10px] text-[#0c4c8f]/60 uppercase tracking-widest">
-            Class
-          </p>
-          <p className="mt-1 text-xs font-semibold text-slate-700 truncate">
-            {event.label}
-          </p>
-        </div>
-
-        <div className="rounded-lg border border-[#0c4c8f]/15 bg-white px-3 py-2 shadow-sm">
-          <p className="text-[10px] text-[#0c4c8f]/60 uppercase tracking-widest">
-            Top Feature
-          </p>
-          <p className="mt-1 text-xs font-mono text-slate-700 truncate">
-            {topReason?.feature ?? "—"}
-          </p>
-        </div>
-
-        <div className="rounded-lg border border-[#0c4c8f]/15 bg-white px-3 py-2 shadow-sm">
-          <p className="text-[10px] text-[#0c4c8f]/60 uppercase tracking-widest">
-            SHAP Value
-          </p>
-          <p
-            className={`mt-1 text-xs font-mono font-semibold ${
-              (topReason?.shap_value ?? 0) >= 0
-                ? "text-red-700"
-                : "text-[#0c4c8f]"
-            }`}
-          >
-            {topReason
+      {/* Summary pills */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 px-5 py-4 bg-slate-50/50 border-b border-slate-100">
+        {[
+          { label: "Prediction", value: isAttack ? "Attack" : "Benign", color: isAttack ? "text-red-600" : "text-emerald-600" },
+          { label: "Class",      value: event.label,                    color: "text-slate-700" },
+          { label: "Top Feature",value: topReason?.feature ?? "—",      color: "text-slate-700" },
+          { label: "SHAP Value", value: topReason
               ? `${topReason.shap_value > 0 ? "+" : ""}${topReason.shap_value.toFixed(4)}`
-              : "—"}
-          </p>
-        </div>
+              : "—",
+            color: (topReason?.shap_value ?? 0) >= 0 ? "text-red-600" : "text-[#0c4c8f]" },
+        ].map(({ label, value, color }) => (
+          <div key={label} className="bg-white rounded-xl border border-slate-200 px-3 py-2.5 shadow-sm">
+            <p className="text-[9px] text-slate-400 uppercase tracking-widest font-semibold mb-0.5">{label}</p>
+            <p className={`text-xs font-bold truncate font-mono ${color}`}>{value}</p>
+          </div>
+        ))}
       </div>
 
-      {/* XAI Section */}
+      {/* SHAP cards */}
       {isAttack && event.reasoning.length > 0 && (
-        <div className="p-5 bg-[#0c4c8f]/[0.025]">
-          <p className="text-xs font-semibold text-[#0c4c8f] uppercase tracking-widest mb-3">
-            XAI Decision — SHAP Feature Contributions (This Sample)
-          </p>
-
+        <div className="p-5 bg-white">
+          <div className="flex items-center gap-2 mb-3">
+            <p className="text-[10px] font-bold text-[#0c4c8f] uppercase tracking-widest">
+              SHAP Explanation — Predicted Attack Class
+            </p>
+            <span className="text-[10px] text-slate-400 font-normal normal-case tracking-normal">
+              · top feature contributions · supports analyst interpretation
+            </span>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-3">
-            {event.reasoning.map((r) => (
-              <XaiCard key={r.feature} reason={r} />
-            ))}
+            {event.reasoning.map(r => <XaiCard key={r.feature} reason={r} />)}
           </div>
         </div>
       )}
 
-      {/* Benign Message */}
       {!isAttack && (
         <div className="px-5 py-3 bg-white">
-          <p className="text-xs text-slate-600">
-            No threats detected in this flow.
-          </p>
+          <p className="text-xs text-slate-400">No threats detected in this flow.</p>
         </div>
       )}
     </div>
