@@ -220,7 +220,7 @@ The final project documents are available in the `docs/` directory:
 
 - [Graduation Project Thesis](docs/Graduation_Project_Thesis.pdf)
 - [Graduation Project Article](docs/Graduation_Project_Article.pdf)
-- [Graduation Project Poster](docs/Graduation_Project_Poster.pdf)
+- [Graduation Project Poster](docs/Updated_Poster.pdf)
 - [References](docs/References.md)
 
 ---
