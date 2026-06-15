@@ -1,6 +1,7 @@
 # Python
 venv/
 __pycache__/
+.ipynb_checkpoints/
 *.pyc
 *.pyo
 
@@ -10,13 +11,23 @@ data/csv/*.png
 data/csv/*.txt
 data/pcap/*.pcap
 data/output/*.csv
+
 # Grafik çıktıları
 data/plots/*.png
 data/model_outputs/*.csv
 data/model_outputs/*.png
 
+# CatBoost ile ilgili dosyalar
+catboost_info/
+notebooks/catboost_info/
+
 # VS Code
 .vscode/
+
+node_modules/
+.next/
+frontend/node_modules/
+frontend/.next/
 
 # macOS
 .DS_Store
