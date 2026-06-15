@@ -39,3 +39,30 @@ export interface SessionStats {
   benign: number;
   attackRate: number;
 }
+
+export interface FedRound {
+  round: number;
+  accuracy: number;
+  precision_weighted: number;
+  recall_weighted: number;
+  f1_weighted: number;
+  f1_macro: number;
+}
+
+export interface FederatedSummary {
+  enabled: boolean;
+  mode: string;
+  model_type: string;
+  clients: number;
+  rounds: number;
+  local_epochs: number;
+  iid_split: boolean;
+  n_features: number;
+  train_samples: number;
+  holdout_samples: number;
+  final_accuracy: number | null;
+  final_weighted_f1: number | null;
+  final_macro_f1: number | null;
+  round_history: FedRound[];
+  note: string;
+}

@@ -39,6 +39,13 @@ export function XaiCard({ reason }: XaiCardProps) {
         </button>
       </div>
 
+      {/* Direction badge */}
+      <p className={`text-[10px] mb-1 font-medium ${isRisk ? "text-red-600" : "text-[#0c4c8f]"}`}>
+        {isRisk
+          ? "Increases predicted attack class score"
+          : "Decreases predicted attack class score"}
+      </p>
+
       {/* SHAP importance bar */}
       <div className="h-1 bg-[#0c4c8f]/10 rounded-full overflow-hidden mb-2">
         <div

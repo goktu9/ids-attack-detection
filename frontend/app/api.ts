@@ -5,6 +5,7 @@ import type {
   StatsResponse,
   SessionStats,
   TrafficPoint,
+  FederatedSummary,
 } from "./types";
 
 const api = axios.create({
@@ -28,3 +29,6 @@ export const fetchDashboardTraffic = (
   limit = 60
 ): Promise<{ items: TrafficPoint[] }> =>
   api.get("/dashboard/traffic", { params: { limit } }).then(r => r.data);
+
+export const fetchFederatedSummary = (): Promise<FederatedSummary> =>
+  api.get("/federated/summary").then(r => r.data);
